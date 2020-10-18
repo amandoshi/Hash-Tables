@@ -29,6 +29,8 @@ class HashTable:
         
         for item in items:
             self.add_item(item)
+            
+        self.rehash_check()
     
     def new_table(self):
         self._hash_table = [[None] * HashTable._linked_length for i in range(self._length)]
@@ -64,15 +66,34 @@ class HashTable:
         
         return converted_item
 
+    def rehash_check(self):
+        length_ratio = self._occupied / self._length
+        
+        if length_ratio < HashTable._lower_limit:
+            self._length = self._length // 2 + 1
+            self.rehash()
+        elif length_ratio > HashTable._upper_limit:
+            self._length *= 2
+            self.rehash()
+    
+    def rehash(self):
+        table_copy = self._hash_table.copy()
+        self._occupied = 0
+        self.new_table()
+        
+        for row in table_copy:
+            for item in row:
+                if item:
+                    self.add_item(item, converted=True)
 
 def main():
     members = HashTable(DATA, ATTRIBUTES)
     
     new_member = [131,"Kirsten","SE2"]
     members.add_item(new_member)
-    for row in members._hash_table: print(row)
-    
-    print(members._occupied, members._length)
-    
+   
+    members._length = 15
+    members.rehash()
+
 if __name__ == "__main__":
     main()
