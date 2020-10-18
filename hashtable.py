@@ -51,7 +51,29 @@ class HashTable:
             counter += 1
         if not item_added:
             self._bucket.append(item)
-                
+    
+    def delete_item(self, item):
+        target_key = self.hash(item[0])
+        index = target_key % self._length
+        
+        found = False
+        counter = 0
+        while counter < HashTable._linked_length and not found and self._hash_table[index][counter] != None:
+            if self._hash_table[index][counter]["key"] == target_key:
+                self._hash_table[index].pop(counter)
+                self._hash_table[index].append(None)
+                if not self._hash_table[index][0]:
+                    self._occupied -= 1
+                found = True
+            counter += 1
+
+        counter = 0
+        while counter < len(self._bucket) and not found:
+            if self._bucket[counter]["key"] == target_key:
+                self._bucket.pop(counter)
+                found = True
+            counter += 1
+
     def hash(self, n):
         return n**2
     
@@ -91,8 +113,15 @@ def main():
     
     new_member = [131,"Kirsten","SE2"]
     members.add_item(new_member)
+    for row in members._hash_table: print(row)
+    
+    print("\nDelete: Nguyen")
+    members.delete_item([124,"Nguyen","HD12"])
+    for row in members._hash_table: print(row)
    
+    # force change in length
     members._length = 15
+    # rehash with new length
     members.rehash()
 
 if __name__ == "__main__":
